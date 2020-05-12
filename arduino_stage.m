@@ -1,3 +1,59 @@
+% Program:  arduino_stage.m
+%
+% Summary:  This is a class for communicating with an arduino-controlled stage
+%           built for a low-magnification microscope. Both hardware and
+%           software are currently under construction. The design involves
+%           an Arduino Uno and the Adafruit v2 Motor Shield, which drives 2 
+%           stepper motors. This class combines the objects for the
+%           arudino, the motor shield, and the stepper motors, making them
+%           properties, and implements a function for moving the stage to a
+%           specified position.
+%
+% Properties:   a - arduino class
+%               shield - shield class
+%               stepperX, stepperY - stepper motor classes
+%               position - 1x2 array that stores the current [X,Y]
+%                          positions in units of mm.
+%               mm_per_step - (int) number of mm per step of the motor.
+%                           estimated, for example, by dividing the shaft
+%                           thread spacing by the number of steps per
+%                           revolution of the motor.
+%               COMport - (str) COM port for the arduino
+%               XY_motor_ids - 1x2 int array that specifies which motor on
+%                           the board is the X axis and which is the Y.
+%
+% Dependencies: This class requries Matlab's Arduino support package, as 
+%               as the specific library for the Adafruit v2 Motor Shield. 
+%
+% Usage:    
+%           stage = arudino_stage(OPTIONS); where OPTIONS are optional
+%               stage parameters that are specified with the inputParser
+%               syntax. OPTIONS currently include position, mm_per_step,
+%               COMport, and XY_motor_ids. Calling this constructor
+%               initializes the arudino objects, which can also be set
+%               manually.
+%
+%           stage = stage.METHOD(OPTIONS) where METHOD is a method that
+%               modifies a stage property. Ex:
+%
+%                   stage = stage.moveto([1000,500]);
+%
+%               moves the stage to [X,Y] = [1000,500] and then updates the
+%               position property.
+%
+% TODO:     -X and Y movements might want to be interleaved ("diagonal
+%               motion")
+%           -Error handling
+%           -Test with actual 2D system (only 1 axis so far).
+%           -Implement limit switches
+%
+% Author:   Brandon Schlomann
+%
+% Date:     5/12/20 -- first written
+%
+% VCS:      Parthasarathy lab github: low_mag_stage_code repository
+%
+
 classdef arduino_stage
     
    properties

@@ -76,22 +76,26 @@ classdef arduino_stage
            addParameter(p, 'XY_motor_ids', obj.XY_motor_ids);
            addParameter(p, 'mm_per_step', obj.mm_per_step);
            addParameter(p, 'position', obj.position);
+           addParameter(p, 'init_arduino', false);
            parse(p, varargin{:});
-           for n = 1:numel(p.Parameters)
-               obj.(p.Parameters{n}) = p.Results.(p.Parameters{n});
+           [~,overlap_ids,~] = intersect(p.Parameters,properties(obj));
+           for n = 1:numel(overlap_ids)
+               obj.(p.Parameters{overlap_ids(n)}) = p.Results.(p.Parameters{overlap_ids(n)});
            end
            
-           % initial params that are not properties
-           RPM = 300;
-           steps_per_rev = 200;
-           
-           % initialize arduino objects
-           obj.a = arduino(obj.COMport,'Uno','Libraries','Adafruit\MotorShieldV2');
-           obj.shield = addon(obj.a,'Adafruit\MotorShieldV2');
-           obj.stepperX = stepper(obj.shield,obj.XY_motor_ids(1),steps_per_rev);
-           obj.stepperX.RPM = RPM;
-           obj.stepperY = stepper(obj.shield,obj.XY_motor_ids(2),steps_per_rev);
-           obj.stepperY.RPM = RPM;
+           if p.Results.init_arduino
+               % initial params that are not properties
+               RPM = 300;
+               steps_per_rev = 200;
+               
+               % initialize arduino objects
+               obj.a = arduino(obj.COMport,'Uno','Libraries','Adafruit\MotorShieldV2');
+               obj.shield = addon(obj.a,'Adafruit\MotorShieldV2');
+               obj.stepperX = stepper(obj.shield,obj.XY_motor_ids(1),steps_per_rev);
+               obj.stepperX.RPM = RPM;
+               obj.stepperY = stepper(obj.shield,obj.XY_motor_ids(2),steps_per_rev);
+               obj.stepperY.RPM = RPM;
+           end
            
        end
        
